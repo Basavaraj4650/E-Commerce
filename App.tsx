@@ -10,6 +10,7 @@ import {Cart} from './src/screens/Cart';
 import {Profile} from './src/screens/Profile';
 import {Home} from './src/screens/Home';
 import {ForgotPassword, Login, Signup} from './src/screens/Login';
+import ChangePassword from './src/screens/Login/components/ChangePassword';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -63,6 +64,7 @@ const App = () => {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+          <Stack.Screen name="ChangePassword" component={ChangePassword} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Cart" component={Cart} />
           <Stack.Screen name="Profile" component={Profile} />
