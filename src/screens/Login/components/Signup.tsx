@@ -10,7 +10,6 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {COLORS} from '../../../constants/theme';
-import Icon from 'react-native-vector-icons/Entypo';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
   isLandscape,
@@ -20,6 +19,7 @@ import {style} from '../style';
 import {signup} from '../service/login.services';
 import {validateEmail, validatePassword} from '../../../shared/validation';
 import {CustomButton} from '../../../components/Button';
+import DynamicIcon from '../../../components/DynamicIcon';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -262,7 +262,8 @@ const Signup = ({navigation}: Props) => {
             onPress={() => {
               setPwdVisible(!pwdVisible);
             }}>
-            <Icon
+            <DynamicIcon
+              library="Entypo"
               name={pwdVisible ? 'eye' : 'eye-with-line'}
               size={25}
               color="#666"

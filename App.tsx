@@ -4,13 +4,12 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {QueryClient, QueryClientProvider} from 'react-query';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
 import {Cart} from './src/screens/Cart';
 import {Profile} from './src/screens/Profile';
 import {Home} from './src/screens/Home';
 import {ForgotPassword, Login, Signup} from './src/screens/Login';
 import ChangePassword from './src/screens/Login/components/ChangePassword';
+import DynamicIcon from './src/components/DynamicIcon';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -30,7 +29,12 @@ const App = () => {
           options={{
             tabBarLabel: 'Home',
             tabBarIcon: ({color, size}) => (
-              <FontAwesome name="home" color={color} size={size} />
+              <DynamicIcon
+                library="FontAwesome"
+                name="home"
+                color={color}
+                size={size}
+              />
             ),
             headerTitle: 'Home',
           }}
@@ -40,7 +44,12 @@ const App = () => {
           component={Cart}
           options={{
             tabBarIcon: ({color, size}) => (
-              <FontAwesome name="shopping-cart" color={color} size={size} />
+              <DynamicIcon
+                library="FontAwesome"
+                name="shopping-cart"
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
@@ -49,7 +58,12 @@ const App = () => {
           component={Profile}
           options={{
             tabBarIcon: ({color, size}) => (
-              <FontAwesome name="user" color={color} size={size} />
+              <DynamicIcon
+                library="FontAwesome"
+                name="user"
+                color={color}
+                size={size}
+              />
             ),
           }}
         />

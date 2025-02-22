@@ -16,11 +16,9 @@ import {style} from '../style';
 import {COLORS} from '../../../constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CustomButton} from '../../../components/Button';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useQuery} from 'react-query';
 import {getUserData} from '../service/services';
+import DynamicIcon from '../../../components/DynamicIcon';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -95,9 +93,19 @@ const Profile = ({navigation}: Props) => {
         <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('Profile', {from: 'Settings'})}>
-          <FontAwesome name="user-o" size={24} color="black" />
+          <DynamicIcon
+            library="FontAwesome"
+            name="user-o"
+            size={24}
+            color="black"
+          />
           <Text style={styles.settingText}>Profile</Text>
-          <Icon name="chevron-forward" size={24} color={COLORS.black} />
+          <DynamicIcon
+            library="Ionicons"
+            name="chevron-forward"
+            size={24}
+            color={COLORS.black}
+          />
         </TouchableOpacity>
       </View>
       <View
@@ -111,9 +119,14 @@ const Profile = ({navigation}: Props) => {
         <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('ChangePassword')}>
-          <Feather name="lock" size={24} color="black" />
+          <DynamicIcon library="Feather" name="lock" size={24} color="black" />
           <Text style={styles.settingText}>Change password</Text>
-          <Icon name="chevron-forward" size={24} color={COLORS.black} />
+          <DynamicIcon
+            library="Ionicons"
+            name="chevron-forward"
+            size={24}
+            color={COLORS.black}
+          />
         </TouchableOpacity>
       </View>
       <CustomButton title="Logout" onPress={() => handleLogout()} />

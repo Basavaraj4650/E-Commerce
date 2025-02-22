@@ -8,7 +8,6 @@ import {
   ToastAndroid,
   ScrollView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
   isLandscape,
@@ -18,6 +17,7 @@ import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import {validatePassword, validateEmail} from '../../../shared/validation';
 import {COLORS} from '../../../constants/theme';
+import DynamicIcon from '../../../components/DynamicIcon';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -175,7 +175,8 @@ const ForgotPassword = ({navigation}: Props) => {
               onPress={() => {
                 setNewPwdVisible(!newPwdVisible);
               }}>
-              <Icon
+              <DynamicIcon
+                library="Entypo"
                 name={newPwdVisible ? 'eye' : 'eye-with-line'}
                 size={25}
                 color="#666"
@@ -201,7 +202,8 @@ const ForgotPassword = ({navigation}: Props) => {
               onPress={() => {
                 setConfirmPwdVisible(!confirmPwdVisible);
               }}>
-              <Icon
+              <DynamicIcon
+                library="Entypo"
                 name={confirmPwdVisible ? 'eye' : 'eye-with-line'}
                 size={25}
                 color="#666"
