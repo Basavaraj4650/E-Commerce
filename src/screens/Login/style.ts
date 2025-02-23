@@ -8,7 +8,7 @@ export const style = (
 ) => {
   return StyleSheet.create({
     container: {
-      flexGrow: 1,
+      flex: 1,
       padding: 20,
       backgroundColor: '#000',
       justifyContent: 'center',

@@ -18,6 +18,8 @@ import {CustomButton} from '../../../components/Button';
 import {validatePassword, validateEmail} from '../../../shared/validation';
 import {COLORS} from '../../../constants/theme';
 import DynamicIcon from '../../../components/DynamicIcon';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Loader} from '../../../components/Loader';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -46,6 +48,7 @@ const ForgotPassword = ({navigation}: Props) => {
   const [newPwdVisible, setNewPwdVisible] = useState(false);
   const [confirmPwdVisible, setConfirmPwdVisible] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean | false>(false);
 
   useEffect(() => {
     const handleOrientationChange = () => {
@@ -68,6 +71,7 @@ const ForgotPassword = ({navigation}: Props) => {
   };
 
   const handleVerifyEmail = () => {
+    setIsLoading(true);
     if (!formData.email.trim() || !validateEmail(formData.email.trim())) {
       setErrorMessages(prevErrors => ({
         ...prevErrors,
@@ -79,6 +83,7 @@ const ForgotPassword = ({navigation}: Props) => {
     //API CALL
     ToastAndroid.show('Email verified successfully!', ToastAndroid.SHORT);
     setIsEmailVerified(true);
+    setIsLoading(false);
   };
 
   const handleChangePassword = () => {
@@ -118,113 +123,116 @@ const ForgotPassword = ({navigation}: Props) => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled">
-      <Text style={[styles.loginText, {marginBottom: 0}]}>
-        Forgot Password?
-      </Text>
-      <Text
-        style={{
-          fontSize: 15,
-          color: COLORS.lightGray,
-          fontWeight: '600',
-          marginBottom: isLandscapeMode ? height * 0.06 : height * 0.1,
-          marginTop: isLandscapeMode ? height * 0.02 : height * 0.01,
-        }}>
-        {isEmailVerified
-          ? 'Your new password must be different from the previous used password'
-          : 'Enter your email to verify'}
-      </Text>
+    <SafeAreaView style={styles.container}>
+      {isLoading && <Loader />}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+        keyboardShouldPersistTaps="handled">
+        <Text style={[styles.loginText, {marginBottom: 0}]}>
+          Forgot Password?
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            color: COLORS.lightGray,
+            fontWeight: '600',
+            marginBottom: isLandscapeMode ? height * 0.06 : height * 0.1,
+            marginTop: isLandscapeMode ? height * 0.02 : height * 0.01,
+          }}>
+          {isEmailVerified
+            ? 'Your new password must be different from the previous used password'
+            : 'Enter your email to verify'}
+        </Text>
 
-      {!isEmailVerified ? (
-        <>
-          <Text style={styles.subtitle}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.email}
-            placeholder="Enter Email"
-            placeholderTextColor="#666"
-            onChangeText={handleChange('email')}
-          />
-          {errorMessages.email ? (
-            <Text style={styles.errorText}>{errorMessages.email}</Text>
-          ) : null}
-
-          <View
-            style={{
-              marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
-            }}>
-            <CustomButton title="Verify" onPress={handleVerifyEmail} />
-          </View>
-        </>
-      ) : (
-        <>
-          <Text style={styles.subtitle}>New Password</Text>
-          <View style={styles.passwordContainer}>
+        {!isEmailVerified ? (
+          <>
+            <Text style={styles.subtitle}>Email</Text>
             <TextInput
-              style={styles.passwordInput}
-              value={formData.newPassword}
-              secureTextEntry={!newPwdVisible}
-              placeholder="Enter New Password"
+              style={styles.input}
+              value={formData.email}
+              placeholder="Enter Email"
               placeholderTextColor="#666"
-              onChangeText={handleChange('newPassword')}
+              onChangeText={handleChange('email')}
             />
-            <TouchableOpacity
-              style={styles.eyeIcon}
-              onPress={() => {
-                setNewPwdVisible(!newPwdVisible);
-              }}>
-              <DynamicIcon
-                library="Entypo"
-                name={newPwdVisible ? 'eye' : 'eye-with-line'}
-                size={25}
-                color="#666"
-              />
-            </TouchableOpacity>
-          </View>
-          {errorMessages.newPassword ? (
-            <Text style={styles.errorText}>{errorMessages.newPassword}</Text>
-          ) : null}
+            {errorMessages.email ? (
+              <Text style={styles.errorText}>{errorMessages.email}</Text>
+            ) : null}
 
-          <Text style={styles.subtitle}>Confirm Password</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              value={formData.confirmPassword}
-              secureTextEntry={!confirmPwdVisible}
-              placeholder="Confirm Password"
-              placeholderTextColor="#666"
-              onChangeText={handleChange('confirmPassword')}
-            />
-            <TouchableOpacity
-              style={styles.eyeIcon}
-              onPress={() => {
-                setConfirmPwdVisible(!confirmPwdVisible);
+            <View
+              style={{
+                marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
               }}>
-              <DynamicIcon
-                library="Entypo"
-                name={confirmPwdVisible ? 'eye' : 'eye-with-line'}
-                size={25}
-                color="#666"
+              <CustomButton title="Verify" onPress={handleVerifyEmail} />
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.subtitle}>New Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                value={formData.newPassword}
+                secureTextEntry={!newPwdVisible}
+                placeholder="Enter New Password"
+                placeholderTextColor="#666"
+                onChangeText={handleChange('newPassword')}
               />
-            </TouchableOpacity>
-          </View>
-          {errorMessages.confirmPassword ? (
-            <Text style={styles.errorText}>
-              {errorMessages.confirmPassword}
-            </Text>
-          ) : null}
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => {
+                  setNewPwdVisible(!newPwdVisible);
+                }}>
+                <DynamicIcon
+                  library="Entypo"
+                  name={newPwdVisible ? 'eye' : 'eye-with-line'}
+                  size={25}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
+            {errorMessages.newPassword ? (
+              <Text style={styles.errorText}>{errorMessages.newPassword}</Text>
+            ) : null}
 
-          <View
-            style={{
-              marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
-            }}>
-            <CustomButton title="Submit" onPress={handleChangePassword} />
-          </View>
-        </>
-      )}
-    </ScrollView>
+            <Text style={styles.subtitle}>Confirm Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                value={formData.confirmPassword}
+                secureTextEntry={!confirmPwdVisible}
+                placeholder="Confirm Password"
+                placeholderTextColor="#666"
+                onChangeText={handleChange('confirmPassword')}
+              />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => {
+                  setConfirmPwdVisible(!confirmPwdVisible);
+                }}>
+                <DynamicIcon
+                  library="Entypo"
+                  name={confirmPwdVisible ? 'eye' : 'eye-with-line'}
+                  size={25}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
+            {errorMessages.confirmPassword ? (
+              <Text style={styles.errorText}>
+                {errorMessages.confirmPassword}
+              </Text>
+            ) : null}
+
+            <View
+              style={{
+                marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
+              }}>
+              <CustomButton title="Submit" onPress={handleChangePassword} />
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

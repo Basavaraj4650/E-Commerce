@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,11 @@ import {signup} from '../service/login.services';
 import {validateEmail, validatePassword} from '../../../shared/validation';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
+import {AlertType} from '../../../constants/config';
+import CustomAlert from '../../../components/CustomAlert';
+import {Loader} from '../../../components/Loader';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {UserSignupData} from '../service/login.interface';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -60,6 +65,10 @@ const Signup = ({navigation}: Props) => {
     street: '',
   });
   const [pwdVisible, setPwdVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean | false>(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<AlertType>('error');
+  const alertRef = useRef<{show: () => void; hide: () => void}>(null);
 
   useEffect(() => {
     const handleOrientationChange = () => {
@@ -137,7 +146,7 @@ const Signup = ({navigation}: Props) => {
 
     setErrorMessages(updatedErrorMessages);
 
-    const payload = {
+    const payload: UserSignupData = {
       email: formData.email.trim(),
       username: formData.username.trim(),
       password: formData.password.trim(),
@@ -159,151 +168,177 @@ const Signup = ({navigation}: Props) => {
     };
 
     try {
+      setIsLoading(true);
       const res = await signup(payload);
       if (res) {
+        setIsLoading(false);
         ToastAndroid.show('User Created Successfully', ToastAndroid.SHORT);
         navigation.navigate('Login');
+      } else {
+        setIsLoading(false);
+        setAlertMessage('Something Went Wrong');
+        setAlertType('error');
+        alertRef.current?.show();
       }
-    } catch (error) {
-      console.log('error---->', JSON.stringify(error));
+    } catch (error: any) {
+      setIsLoading(false);
+      setAlertMessage(error?.response?.data || 'Something Went Wrong');
+      setAlertType('error');
+      alertRef.current?.show();
     }
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled">
-      <Text
-        style={[
-          styles.loginText,
-          {marginBottom: isLandscapeMode ? height * 0.06 : height * 0.03},
-        ]}>
-        SignUp !
-      </Text>
-      <>
-        <Text style={styles.subtitle}>User Name</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.username}
-          placeholder="Enter Name"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('username')}
-        />
-        {errorMessages.username ? (
-          <Text style={styles.errorText}>{errorMessages.username}</Text>
-        ) : null}
-      </>
-      <>
-        <Text style={styles.subtitle}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.email}
-          placeholder="Enter Email"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('email')}
-        />
-        {errorMessages.email ? (
-          <Text style={styles.errorText}>{errorMessages.email}</Text>
-        ) : null}
-      </>
-      <>
-        <Text style={styles.subtitle}>Phone</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.phone}
-          placeholder="Enter phone Number"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('phone')}
-          keyboardType="numeric"
-        />
-        {errorMessages.phone ? (
-          <Text style={styles.errorText}>{errorMessages.phone}</Text>
-        ) : null}
-      </>
-      <>
-        <Text style={styles.subtitle}>City</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.city}
-          placeholder="Enter city"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('city')}
-        />
-        {errorMessages.city ? (
-          <Text style={styles.errorText}>{errorMessages.city}</Text>
-        ) : null}
-      </>
-      <>
-        <Text style={styles.subtitle}>Address</Text>
-        <TextInput
-          style={styles.input}
-          value={formData.street}
-          placeholder="Enter Address"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('street')}
-        />
-        {errorMessages.street ? (
-          <Text style={styles.errorText}>{errorMessages.street}</Text>
-        ) : null}
-      </>
-      <>
-        <Text style={styles.subtitle}>Password</Text>
-        <View style={styles.passwordContainer}>
+    <SafeAreaView style={styles.container}>
+      {isLoading && <Loader />}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1}}
+        keyboardShouldPersistTaps="handled">
+        <Text
+          style={[
+            styles.loginText,
+            {marginBottom: isLandscapeMode ? height * 0.06 : height * 0.03},
+          ]}>
+          SignUp !
+        </Text>
+        <>
+          <Text style={styles.subtitle}>User Name</Text>
           <TextInput
-            style={styles.passwordInput}
-            value={formData.password}
-            secureTextEntry={!pwdVisible}
-            placeholder="Enter Your Password"
+            style={styles.input}
+            value={formData.username}
+            placeholder="Enter Name"
             placeholderTextColor="#666"
-            onChangeText={handleChange('password')}
+            onChangeText={handleChange('username')}
           />
-          <TouchableOpacity
-            style={styles.eyeIcon}
-            onPress={() => {
-              setPwdVisible(!pwdVisible);
-            }}>
-            <DynamicIcon
-              library="Entypo"
-              name={pwdVisible ? 'eye' : 'eye-with-line'}
-              size={25}
-              color="#666"
+          {errorMessages.username ? (
+            <Text style={styles.errorText}>{errorMessages.username}</Text>
+          ) : null}
+        </>
+        <>
+          <Text style={styles.subtitle}>Email</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.email}
+            placeholder="Enter Email"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('email')}
+          />
+          {errorMessages.email ? (
+            <Text style={styles.errorText}>{errorMessages.email}</Text>
+          ) : null}
+        </>
+        <>
+          <Text style={styles.subtitle}>Phone</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.phone}
+            placeholder="Enter phone Number"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('phone')}
+            keyboardType="numeric"
+          />
+          {errorMessages.phone ? (
+            <Text style={styles.errorText}>{errorMessages.phone}</Text>
+          ) : null}
+        </>
+        <>
+          <Text style={styles.subtitle}>City</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.city}
+            placeholder="Enter city"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('city')}
+          />
+          {errorMessages.city ? (
+            <Text style={styles.errorText}>{errorMessages.city}</Text>
+          ) : null}
+        </>
+        <>
+          <Text style={styles.subtitle}>Address</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.street}
+            placeholder="Enter Address"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('street')}
+          />
+          {errorMessages.street ? (
+            <Text style={styles.errorText}>{errorMessages.street}</Text>
+          ) : null}
+        </>
+        <>
+          <Text style={styles.subtitle}>Password</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              value={formData.password}
+              secureTextEntry={!pwdVisible}
+              placeholder="Enter Your Password"
+              placeholderTextColor="#666"
+              onChangeText={handleChange('password')}
             />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => {
+                setPwdVisible(!pwdVisible);
+              }}>
+              <DynamicIcon
+                library="Entypo"
+                name={pwdVisible ? 'eye' : 'eye-with-line'}
+                size={25}
+                color="#666"
+              />
+            </TouchableOpacity>
+          </View>
+          {errorMessages.password ? (
+            <Text style={styles.errorText}>{errorMessages.password}</Text>
+          ) : null}
+        </>
+        <View style={{marginTop: 20}}>
+          <CustomButton title="Sign up" onPress={handleSignup} />
+        </View>
+
+        <View style={styles.lineContainer}>
+          <View style={styles.subLineContainer} />
+          <Text style={styles.lineContainerText}>OR</Text>
+          <View style={styles.subLineContainer} />
+        </View>
+
+        <TouchableOpacity style={styles.socialButton}>
+          <Image
+            source={require('../../../assets/google_icon.png')}
+            style={styles.socialIcon}
+          />
+          <Text style={styles.socialButtonText}>Continue with Google</Text>
+        </TouchableOpacity>
+        <View style={[styles.signUpContainer, {marginBottom: 20}]}>
+          <Text style={[styles.socialText, {color: COLORS.darkGrey}]}>
+            Already have an account?{' '}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Login');
+            }}
+            style={{marginLeft: width * 0.01}}>
+            <Text style={[styles.socialText]}>Log In</Text>
           </TouchableOpacity>
         </View>
-        {errorMessages.password ? (
-          <Text style={styles.errorText}>{errorMessages.password}</Text>
-        ) : null}
-      </>
-      <View style={{marginTop: 20}}>
-        <CustomButton title="Sign up" onPress={handleSignup} />
-      </View>
-
-      <View style={styles.lineContainer}>
-        <View style={styles.subLineContainer} />
-        <Text style={styles.lineContainerText}>OR</Text>
-        <View style={styles.subLineContainer} />
-      </View>
-
-      <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={require('../../../assets/google_icon.png')}
-          style={styles.socialIcon}
-        />
-        <Text style={styles.socialButtonText}>Continue with Google</Text>
-      </TouchableOpacity>
-      <View style={[styles.signUpContainer, {marginBottom: 20}]}>
-        <Text style={[styles.socialText, {color: COLORS.darkGrey}]}>
-          Already have an account?{' '}
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Login');
-          }}
-          style={{marginLeft: width * 0.01}}>
-          <Text style={[styles.socialText]}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <CustomAlert
+        ref={alertRef}
+        type={alertType}
+        message={alertMessage}
+        saveLabel="Okay"
+        cancelLabel="Cancel"
+        onSave={() => {
+          alertRef.current?.hide();
+        }}
+        onCancel={() => {
+          alertRef.current?.hide();
+        }}
+      />
+    </SafeAreaView>
   );
 };
 

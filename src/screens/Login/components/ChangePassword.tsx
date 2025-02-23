@@ -18,6 +18,8 @@ import {CustomButton} from '../../../components/Button';
 import {validatePassword} from '../../../shared/validation';
 import {COLORS} from '../../../constants/theme';
 import DynamicIcon from '../../../components/DynamicIcon';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Loader} from '../../../components/Loader';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -43,6 +45,7 @@ const ChangePassword = ({navigation}: Props) => {
 
   const [newPwdVisible, setNewPwdVisible] = useState(false);
   const [confirmPwdVisible, setConfirmPwdVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean | false>(false);
 
   useEffect(() => {
     const handleOrientationChange = () => {
@@ -101,83 +104,89 @@ const ChangePassword = ({navigation}: Props) => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled">
-      <Text style={[styles.loginText, {marginBottom: 0}]}>
-        Change Password?
-      </Text>
-      <Text
-        style={{
-          fontSize: 15,
-          color: COLORS.lightGray,
-          fontWeight: '600',
-          marginBottom: isLandscapeMode ? height * 0.06 : height * 0.1,
-          marginTop: isLandscapeMode ? height * 0.02 : height * 0.01,
-        }}>
-        Your new password must be different from the previous used password
-      </Text>
-      <Text style={styles.subtitle}>New Password</Text>
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.passwordInput}
-          value={formData.newPassword}
-          secureTextEntry={!newPwdVisible}
-          placeholder="Enter New Password"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('newPassword')}
-        />
-        <TouchableOpacity
-          style={styles.eyeIcon}
-          onPress={() => {
-            setNewPwdVisible(!newPwdVisible);
+    <SafeAreaView style={styles.container}>
+      {isLoading && <Loader />}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+        keyboardShouldPersistTaps="handled">
+        <Text style={[styles.loginText, {marginBottom: 0}]}>
+          Change Password?
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            color: COLORS.lightGray,
+            fontWeight: '600',
+            marginBottom: isLandscapeMode ? height * 0.06 : height * 0.1,
+            marginTop: isLandscapeMode ? height * 0.02 : height * 0.01,
           }}>
-          <DynamicIcon
-            library="Entypo"
-            name={newPwdVisible ? 'eye' : 'eye-with-line'}
-            size={25}
-            color="#666"
+          Your new password must be different from the previous used password
+        </Text>
+        <Text style={styles.subtitle}>New Password</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            value={formData.newPassword}
+            secureTextEntry={!newPwdVisible}
+            placeholder="Enter New Password"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('newPassword')}
           />
-        </TouchableOpacity>
-      </View>
-      {errorMessages.newPassword ? (
-        <Text style={styles.errorText}>{errorMessages.newPassword}</Text>
-      ) : null}
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => {
+              setNewPwdVisible(!newPwdVisible);
+            }}>
+            <DynamicIcon
+              library="Entypo"
+              name={newPwdVisible ? 'eye' : 'eye-with-line'}
+              size={25}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
+        {errorMessages.newPassword ? (
+          <Text style={styles.errorText}>{errorMessages.newPassword}</Text>
+        ) : null}
 
-      <Text style={styles.subtitle}>Confirm Password</Text>
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.passwordInput}
-          value={formData.confirmPassword}
-          secureTextEntry={!confirmPwdVisible}
-          placeholder="Confirm Password"
-          placeholderTextColor="#666"
-          onChangeText={handleChange('confirmPassword')}
-        />
-        <TouchableOpacity
-          style={styles.eyeIcon}
-          onPress={() => {
-            setConfirmPwdVisible(!confirmPwdVisible);
+        <Text style={styles.subtitle}>Confirm Password</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            value={formData.confirmPassword}
+            secureTextEntry={!confirmPwdVisible}
+            placeholder="Confirm Password"
+            placeholderTextColor="#666"
+            onChangeText={handleChange('confirmPassword')}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => {
+              setConfirmPwdVisible(!confirmPwdVisible);
+            }}>
+            <DynamicIcon
+              library="Entypo"
+              name={confirmPwdVisible ? 'eye' : 'eye-with-line'}
+              size={25}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
+        {errorMessages.confirmPassword ? (
+          <Text style={styles.errorText}>{errorMessages.confirmPassword}</Text>
+        ) : null}
+
+        <View
+          style={{
+            marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
           }}>
-          <DynamicIcon
-            library="Entypo"
-            name={confirmPwdVisible ? 'eye' : 'eye-with-line'}
-            size={25}
-            color="#666"
+          <CustomButton
+            title="Change Password"
+            onPress={handleChangePassword}
           />
-        </TouchableOpacity>
-      </View>
-      {errorMessages.confirmPassword ? (
-        <Text style={styles.errorText}>{errorMessages.confirmPassword}</Text>
-      ) : null}
-
-      <View
-        style={{
-          marginTop: isLandscapeMode ? height * 0.08 : height * 0.04,
-        }}>
-        <CustomButton title="Change Password" onPress={handleChangePassword} />
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
