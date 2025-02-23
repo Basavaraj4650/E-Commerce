@@ -6,6 +6,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import {
   isLandscape,
@@ -21,6 +22,10 @@ import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
 import {Products} from '../service/product.interface';
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from '../../../shared/localStore';
 
 const ProductDetails = (props: any) => {
   const productId = props?.route?.params?.productId;
@@ -59,6 +64,37 @@ const ProductDetails = (props: any) => {
       },
     },
   );
+
+  const addToCart = async () => {
+    try {
+      const existingCart = (await getFromLocalStorage('cart')) || [];
+      const updatedCart = [...existingCart];
+
+      const existingProductIndex = updatedCart.findIndex(
+        item => item.id === product?.id,
+      );
+
+      if (existingProductIndex !== -1) {
+        updatedCart[existingProductIndex].quantity += 1;
+      } else {
+        updatedCart.push({
+          ...product,
+          quantity: 1,
+          liked: false,
+        });
+      }
+
+      await setToLocalStorage('cart', updatedCart).then(() => {
+        ToastAndroid.show(
+          'Product added to cart Successfully',
+          ToastAndroid.SHORT,
+        );
+        props.navigation.navigate('Cart');
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -131,10 +167,7 @@ const ProductDetails = (props: any) => {
                 <Text style={styles.description}>{product.description}</Text>
               </View>
             </View>
-            <CustomButton
-              title="Add To Cart"
-              onPress={() => props.navigation.navigate('Cart')}
-            />
+            <CustomButton title="Add To Cart" onPress={addToCart} />
           </>
         )}
       </ScrollView>
