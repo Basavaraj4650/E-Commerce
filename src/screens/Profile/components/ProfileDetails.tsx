@@ -229,9 +229,7 @@ const ProfileDetails = ({navigation}: Props) => {
         </View>
         <View style={styles.profileDetailsContainer}>
           <Image
-            source={{
-              uri: 'https://avatar.iran.liara.run/public/boy?username=Ash',
-            }}
+            source={require('../../../assets/User.png')}
             style={styles.profileDetailsImage}
           />
         </View>

@@ -14,7 +14,6 @@ import {
 } from '../../../shared/orientation';
 import {style} from '../style';
 import {COLORS} from '../../../constants/theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CustomButton} from '../../../components/Button';
 import {useQuery} from 'react-query';
 import {getUserData} from '../service/profile.services';
@@ -68,7 +67,7 @@ const Profile = ({navigation}: Props) => {
   );
 
   const handleLogout = () => {
-    AsyncStorage.clear();
+    // LogOut API Call
     navigation.navigate('Login');
   };
 
@@ -80,9 +79,7 @@ const Profile = ({navigation}: Props) => {
         keyboardShouldPersistTaps="handled">
         <View style={styles.profileContainer}>
           <Image
-            source={{
-              uri: 'https://avatar.iran.liara.run/public/boy?username=Ash',
-            }}
+            source={require('../../../assets/User.png')}
             style={styles.profileImage}
           />
           <View style={styles.profileTextContainer}>

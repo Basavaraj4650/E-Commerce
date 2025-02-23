@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   useWindowDimensions,
+  ToastAndroid,
 } from 'react-native';
 import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ import CustomAlert from '../../../components/CustomAlert';
 import {CustomButton} from '../../../components/Button';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
+  clearLocalStorage,
   getFromLocalStorage,
   setToLocalStorage,
 } from '../../../shared/localStore';
@@ -23,6 +25,7 @@ import {
   subscribeToOrientationChanges,
 } from '../../../shared/orientation';
 import {style} from '../style';
+import DeleteCustomAlert from '../../../components/CustomDeleteAlert';
 import EmptyCart from './EmptyCart';
 
 type Props = {
@@ -35,6 +38,8 @@ const Cart = ({navigation}: Props) => {
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [cart, setCart] = useState<any[]>([]);
+  const deleteAlertRef = useRef<{show: () => void; hide: () => void}>(null);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null); // Track the selected item ID
 
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
@@ -91,6 +96,7 @@ const Cart = ({navigation}: Props) => {
     const updatedCart = (cart ?? []).filter(item => item.id !== id);
     setCart(updatedCart);
     await setToLocalStorage('cart', updatedCart);
+    deleteAlertRef.current?.hide(); // Hide the modal after deletion
   };
 
   const calculateTotal = () => {
@@ -102,6 +108,16 @@ const Cart = ({navigation}: Props) => {
     const tax = subtotal * 0.1;
     const deliveryCharges = 5.0;
     return (subtotal + tax + deliveryCharges).toFixed(2);
+  };
+
+  const handleCheckout = async () => {
+    await clearLocalStorage().then(() => {
+      ToastAndroid.show(
+        'Your order was successfully placed. You will receive it shortly.',
+        ToastAndroid.SHORT,
+      );
+      navigation.navigate('Product');
+    });
   };
 
   return (
@@ -144,7 +160,10 @@ const Cart = ({navigation}: Props) => {
                 </View>
                 <TouchableOpacity
                   style={styles.removeButton}
-                  onPress={() => handleRemoveFromCart(item.id)}>
+                  onPress={() => {
+                    setSelectedItemId(item.id); // Set the selected item ID
+                    deleteAlertRef.current?.show(); // Show the modal
+                  }}>
                   <Text style={styles.removeButtonText}>Remove from Cart</Text>
                 </TouchableOpacity>
               </View>
@@ -189,13 +208,20 @@ const Cart = ({navigation}: Props) => {
             <Text style={styles.totalText}>Total: ${calculateTotal()}</Text>
           </View>
 
-          <CustomButton
-            title="Proceed to Checkout"
-            onPress={() => navigation.navigate('Cart')}
-          />
+          <CustomButton title="Proceed to Checkout" onPress={handleCheckout} />
         </View>
       )}
-
+      <DeleteCustomAlert
+        ref={deleteAlertRef}
+        onDelete={() => {
+          if (selectedItemId !== null) {
+            handleRemoveFromCart(selectedItemId);
+          }
+        }}
+        onCancel={() => {
+          deleteAlertRef.current?.hide();
+        }}
+      />
       <CustomAlert
         ref={alertRef}
         type={alertType}

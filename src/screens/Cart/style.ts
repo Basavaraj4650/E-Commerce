@@ -15,12 +15,6 @@ export const style = (
       paddingHorizontal: 20,
       paddingBottom: 230,
     },
-    emptyCartText: {
-      color: '#fff',
-      textAlign: 'center',
-      marginTop: 50,
-      fontSize: 18,
-    },
     productContainer: {
       flexDirection: 'row',
       backgroundColor: '#111',
