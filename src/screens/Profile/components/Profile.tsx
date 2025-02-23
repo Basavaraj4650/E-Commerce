@@ -108,7 +108,7 @@ const Profile = ({navigation}: Props) => {
           ]}>
           <TouchableOpacity
             style={styles.settingItem}
-            onPress={() => navigation.navigate('Profile', {from: 'Settings'})}>
+            onPress={() => navigation.navigate('ProfileDetails')}>
             <DynamicIcon
               library="FontAwesome"
               name="user-o"

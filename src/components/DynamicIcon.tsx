@@ -5,6 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type IconLibrary =
   | 'Ionicons'
@@ -12,7 +13,8 @@ type IconLibrary =
   | 'FontAwesome'
   | 'Entypo'
   | 'AntDesign'
-  | 'MaterialCommunityIcons';
+  | 'MaterialCommunityIcons'
+  | 'MaterialIcons';
 
 type DynamicIconProps = {
   library: IconLibrary;
@@ -35,6 +37,8 @@ const DynamicIcon = ({library, name, size, color}: DynamicIconProps) => {
       return <AntDesign name={name} size={size} color={color} />;
     case 'MaterialCommunityIcons':
       return <MaterialCommunityIcons name={name} size={size} color={color} />;
+    case 'MaterialIcons':
+      return <MaterialIcons name={name} size={size} color={color} />;
     default:
       return null;
   }

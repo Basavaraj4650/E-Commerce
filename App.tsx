@@ -5,7 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {QueryClient, QueryClientProvider} from 'react-query';
 
 import {Cart} from './src/screens/Cart';
-import {Profile} from './src/screens/Profile';
+import {Profile, ProfileDetails} from './src/screens/Profile';
 import {Home} from './src/screens/Home';
 import {ForgotPassword, Login, Signup} from './src/screens/Login';
 import ChangePassword from './src/screens/Login/components/ChangePassword';
@@ -82,6 +82,7 @@ const App = () => {
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Cart" component={Cart} />
           <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>
       </NavigationContainer>
