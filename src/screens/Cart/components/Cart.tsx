@@ -1,11 +1,11 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
 import {
   ScrollView,
   Text,
   Image,
   View,
   TouchableOpacity,
-  StyleSheet,
+  useWindowDimensions,
 } from 'react-native';
 import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -18,6 +18,12 @@ import {
   setToLocalStorage,
 } from '../../../shared/localStore';
 import {useFocusEffect} from '@react-navigation/native';
+import {
+  isLandscape,
+  subscribeToOrientationChanges,
+} from '../../../shared/orientation';
+import {style} from '../style';
+import EmptyCart from './EmptyCart';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -29,6 +35,21 @@ const Cart = ({navigation}: Props) => {
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [cart, setCart] = useState<any[]>([]);
+
+  const {width, height} = useWindowDimensions();
+  const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
+  const styles = useMemo(
+    () => style(width, height, isLandscapeMode),
+    [width, height, isLandscapeMode],
+  );
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setIsLandscapeMode(isLandscape());
+    };
+    const unsubscribe = subscribeToOrientationChanges(handleOrientationChange);
+    return () => unsubscribe();
+  }, []);
 
   const loadCart = async () => {
     setIsLoading(true);
@@ -88,7 +109,7 @@ const Cart = ({navigation}: Props) => {
       {isLoading && <Loader />}
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {cart.length === 0 ? (
-          <Text style={styles.emptyCartText}>Your cart is empty</Text>
+          <EmptyCart />
         ) : (
           cart.map(item => (
             <View key={item.id} style={styles.productContainer}>
@@ -187,91 +208,5 @@ const Cart = ({navigation}: Props) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#000'},
-  scrollViewContent: {flexGrow: 1, paddingHorizontal: 20, paddingBottom: 230},
-  emptyCartText: {
-    color: '#fff',
-    textAlign: 'center',
-    marginTop: 50,
-    fontSize: 18,
-  },
-  productContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#111',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  productImage: {width: 120, height: 170, borderRadius: 10},
-  productDetails: {flex: 1, marginLeft: 10},
-  productTitle: {color: '#fff', fontSize: 16, fontWeight: 'bold'},
-  productDescription: {color: '#888', fontSize: 14, marginTop: 5},
-  productPrice: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  ratingContainer: {marginTop: 5},
-  ratingText: {color: '#FFD700', fontSize: 14},
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  quantityButton: {
-    backgroundColor: '#222',
-    padding: 10,
-    borderRadius: 8,
-    minWidth: 40,
-    alignItems: 'center',
-  },
-  quantityButtonText: {color: '#fff', fontSize: 20, fontWeight: 'bold'},
-  quantityText: {color: '#fff', fontSize: 18, marginHorizontal: 15},
-  removeButton: {
-    marginTop: 10,
-    padding: 8,
-    backgroundColor: '#B22222',
-    borderRadius: 8,
-  },
-  removeButtonText: {color: '#fff', fontSize: 14, textAlign: 'center'},
-  bottomCard: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    backgroundColor: '#222',
-    padding: 20,
-  },
-  summaryText: {
-    color: '#ddd',
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  totalContainer: {
-    borderTopWidth: 1,
-    borderTopColor: '#444',
-    marginBottom: 15,
-  },
-  labelText: {
-    color: '#bbb',
-    fontSize: 16,
-  },
-  valueText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'right',
-    right: 10,
-  },
-  totalText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'right',
-  },
-});
 
 export default Cart;
