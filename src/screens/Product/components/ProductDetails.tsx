@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   ScrollView,
   Text,
@@ -26,6 +26,7 @@ import {
   getFromLocalStorage,
   setToLocalStorage,
 } from '../../../shared/localStore';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ProductDetails = (props: any) => {
   const productId = props?.route?.params?.productId;
@@ -41,6 +42,7 @@ const ProductDetails = (props: any) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
+  const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -48,8 +50,8 @@ const ProductDetails = (props: any) => {
     return () => unsubscribe();
   }, []);
 
-  const {data: product} = useQuery<Products>(
-    ['product'],
+  const {data: product, refetch} = useQuery<Products>(
+    ['product', productId],
     () => {
       setIsLoading(true);
       return getProductDetails(productId);
@@ -65,34 +67,45 @@ const ProductDetails = (props: any) => {
     },
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const checkIfProductInCart = async () => {
+        const existingCart = (await getFromLocalStorage('cart')) || [];
+        const exists = existingCart.some(
+          (item: {id: any}) => item.id === productId,
+        );
+        setIsInCart(exists);
+      };
+
+      checkIfProductInCart();
+      refetch();
+    }, [productId, refetch]),
+  );
+
   const addToCart = async () => {
-    try {
-      const existingCart = (await getFromLocalStorage('cart')) || [];
-      const updatedCart = [...existingCart];
+    if (isInCart) {
+      props.navigation.navigate('Cart');
+    } else {
+      try {
+        const existingCart = (await getFromLocalStorage('cart')) || [];
+        const updatedCart = [...existingCart];
 
-      const existingProductIndex = updatedCart.findIndex(
-        item => item.id === product?.id,
-      );
-
-      if (existingProductIndex !== -1) {
-        updatedCart[existingProductIndex].quantity += 1;
-      } else {
         updatedCart.push({
           ...product,
           quantity: 1,
           liked: false,
         });
-      }
 
-      await setToLocalStorage('cart', updatedCart).then(() => {
-        ToastAndroid.show(
-          'Product added to cart Successfully',
-          ToastAndroid.SHORT,
-        );
-        props.navigation.navigate('Cart');
-      });
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+        await setToLocalStorage('cart', updatedCart).then(() => {
+          ToastAndroid.show(
+            'Product added to cart Successfully',
+            ToastAndroid.SHORT,
+          );
+          props.navigation.navigate('Cart');
+        });
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+      }
     }
   };
 
@@ -167,7 +180,10 @@ const ProductDetails = (props: any) => {
                 <Text style={styles.description}>{product.description}</Text>
               </View>
             </View>
-            <CustomButton title="Add To Cart" onPress={addToCart} />
+            <CustomButton
+              title={isInCart ? 'Go To Cart' : 'Add To Cart'}
+              onPress={addToCart}
+            />
           </>
         )}
       </ScrollView>

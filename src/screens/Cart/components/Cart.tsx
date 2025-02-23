@@ -116,7 +116,7 @@ const Cart = ({navigation}: Props) => {
         'Your order was successfully placed. You will receive it shortly.',
         ToastAndroid.SHORT,
       );
-      navigation.navigate('Product');
+      navigation.navigate('Dashboard');
     });
   };
 
