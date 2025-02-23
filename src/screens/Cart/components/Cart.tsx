@@ -39,7 +39,7 @@ const Cart = ({navigation}: Props) => {
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [cart, setCart] = useState<any[]>([]);
   const deleteAlertRef = useRef<{show: () => void; hide: () => void}>(null);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null); // Track the selected item ID
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
@@ -96,7 +96,7 @@ const Cart = ({navigation}: Props) => {
     const updatedCart = (cart ?? []).filter(item => item.id !== id);
     setCart(updatedCart);
     await setToLocalStorage('cart', updatedCart);
-    deleteAlertRef.current?.hide(); // Hide the modal after deletion
+    deleteAlertRef.current?.hide();
   };
 
   const calculateTotal = () => {
@@ -161,8 +161,8 @@ const Cart = ({navigation}: Props) => {
                 <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => {
-                    setSelectedItemId(item.id); // Set the selected item ID
-                    deleteAlertRef.current?.show(); // Show the modal
+                    setSelectedItemId(item.id);
+                    deleteAlertRef.current?.show();
                   }}>
                   <Text style={styles.removeButtonText}>Remove from Cart</Text>
                 </TouchableOpacity>
