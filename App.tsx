@@ -10,6 +10,7 @@ import {Home} from './src/screens/Home';
 import {ForgotPassword, Login, Signup} from './src/screens/Login';
 import ChangePassword from './src/screens/Login/components/ChangePassword';
 import DynamicIcon from './src/components/DynamicIcon';
+import {ProductDetails} from './src/screens/Product';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -83,6 +84,7 @@ const App = () => {
           <Stack.Screen name="Cart" component={Cart} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
+          <Stack.Screen name="ProductDetails" component={ProductDetails} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>
       </NavigationContainer>
