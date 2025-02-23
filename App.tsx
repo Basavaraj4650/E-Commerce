@@ -6,7 +6,7 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 
 import {Cart} from './src/screens/Cart';
 import {Profile, ProfileDetails} from './src/screens/Profile';
-import {Home} from './src/screens/Home';
+import {CategoryProducts, Home} from './src/screens/Home';
 import {ForgotPassword, Login, Signup} from './src/screens/Login';
 import ChangePassword from './src/screens/Login/components/ChangePassword';
 import DynamicIcon from './src/components/DynamicIcon';
@@ -101,6 +101,7 @@ const App = () => {
           <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
           <Stack.Screen name="Product" component={Product} />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
+          <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>
       </NavigationContainer>
