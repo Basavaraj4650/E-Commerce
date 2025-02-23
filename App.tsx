@@ -11,6 +11,7 @@ import {ForgotPassword, Login, Signup} from './src/screens/Login';
 import ChangePassword from './src/screens/Login/components/ChangePassword';
 import DynamicIcon from './src/components/DynamicIcon';
 import {ProductDetails} from './src/screens/Product';
+import Product from './src/screens/Product/components/Product';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -38,6 +39,20 @@ const App = () => {
               />
             ),
             headerTitle: 'Home',
+          }}
+        />
+        <Tab.Screen
+          name="Products"
+          component={Product}
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <DynamicIcon
+                library="FontAwesome"
+                name="shopping-bag"
+                color={color}
+                size={size}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -84,6 +99,7 @@ const App = () => {
           <Stack.Screen name="Cart" component={Cart} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
+          <Stack.Screen name="Product" component={Product} />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>

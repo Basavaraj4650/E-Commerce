@@ -7,7 +7,6 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
   isLandscape,
   subscribeToOrientationChanges,
@@ -21,13 +20,11 @@ import {getProductDetails} from '../service/product.services';
 import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
-import {Product} from '../service/product.interface';
+import {Products} from '../service/product.interface';
 
-type Props = {
-  navigation: NavigationProp<ParamListBase>;
-};
+const ProductDetails = (props: any) => {
+  const productId = props?.route?.params?.productId;
 
-const ProductDetails = ({navigation}: Props) => {
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
   const styles = useMemo(
@@ -46,11 +43,11 @@ const ProductDetails = ({navigation}: Props) => {
     return () => unsubscribe();
   }, []);
 
-  const {data: product} = useQuery<Product>(
+  const {data: product} = useQuery<Products>(
     ['product'],
     () => {
       setIsLoading(true);
-      return getProductDetails(2);
+      return getProductDetails(productId);
     },
     {
       onSuccess: () => setIsLoading(false),
@@ -71,7 +68,7 @@ const ProductDetails = ({navigation}: Props) => {
           <>
             <View style={styles.header}>
               <TouchableOpacity
-                onPress={() => navigation.goBack()}
+                onPress={() => props.navigation.goBack()}
                 style={styles.backButton}>
                 <DynamicIcon
                   library="AntDesign"
@@ -104,7 +101,7 @@ const ProductDetails = ({navigation}: Props) => {
               </View>
               <Image
                 source={{uri: product.image}}
-                style={styles.productImage}
+                style={styles.productDetailImage}
               />
             </View>
 
@@ -136,7 +133,7 @@ const ProductDetails = ({navigation}: Props) => {
             </View>
             <CustomButton
               title="Add To Cart"
-              onPress={() => navigation.navigate('Cart')}
+              onPress={() => props.navigation.navigate('Cart')}
             />
           </>
         )}

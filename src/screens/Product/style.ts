@@ -41,7 +41,7 @@ export const style = (
       borderWidth: 1,
       borderColor: 'white',
     },
-    productImage: {
+    productDetailImage: {
       flex: 1,
       height: isLandscapeMode ? height * 0.8 : height * 0.4,
       resizeMode: 'contain',
@@ -66,7 +66,7 @@ export const style = (
     },
     title: {
       color: '#fff',
-      fontSize: 24,
+      fontSize: 22,
       fontWeight: 'bold',
     },
     ratingContainer: {
@@ -88,6 +88,64 @@ export const style = (
       color: '#aaa',
       fontSize: 16,
       marginTop: 5,
+    },
+
+    productList: {
+      flexGrow: 1,
+      justifyContent: 'center',
+    },
+    productItem: {
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      padding: 10,
+      alignItems: 'center',
+      margin: 10,
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 2,
+      transform: [{scale: 1}],
+    },
+    discountedProduct: {
+      borderWidth: 2,
+      borderColor: '#FF8C00',
+      backgroundColor: '#FFF3E0',
+    },
+    productImage: {
+      width: '100%',
+      height: isLandscapeMode ? height * 0.8 : height * 0.2,
+      borderRadius: 10,
+    },
+    productTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginTop: isLandscapeMode ? height * 0.024 : height * 0.012,
+      textAlign: 'center',
+      color: 'black',
+    },
+    productPrice: {
+      fontSize: 14,
+      color: '#FF8C00',
+      fontWeight: 'bold',
+    },
+    discountContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: isLandscapeMode ? height * 0.016 : height * 0.008,
+      alignItems: 'center',
+    },
+    discountBadge: {
+      backgroundColor: 'red',
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 5,
+    },
+    productDiscount: {
+      fontSize: 14,
+      color: 'white',
+      fontWeight: 'bold',
     },
   });
 };
