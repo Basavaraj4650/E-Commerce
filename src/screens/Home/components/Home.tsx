@@ -49,7 +49,7 @@ const Home = ({navigation}: Props) => {
     return () => unsubscribe();
   }, []);
 
-  const {data: productList} = useQuery<Products>(
+  const {data: productList, isLoading: isProductLoading} = useQuery<Products>(
     ['productList'],
     async () => {
       setIsLoading(true);
@@ -173,7 +173,7 @@ const Home = ({navigation}: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading && <Loader />}
+      {(isLoading || isProductLoading) && <Loader />}
       <ScrollView>
         {catagaryList && renderCatagarySection(catagaryList)}
         {renderDealsOfTheDay(dealsOfTheDay)}

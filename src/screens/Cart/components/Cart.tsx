@@ -111,11 +111,17 @@ const Cart = ({navigation}: Props) => {
   };
 
   const handleCheckout = async () => {
+    setIsLoading(true);
+
+    // Checkout API
+
     await clearLocalStorage().then(() => {
+      setCart([]);
       ToastAndroid.show(
         'Your order was successfully placed. You will receive it shortly.',
         ToastAndroid.SHORT,
       );
+      setIsLoading(false);
       navigation.navigate('Dashboard');
     });
   };
@@ -125,7 +131,7 @@ const Cart = ({navigation}: Props) => {
       {isLoading && <Loader />}
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {cart.length === 0 ? (
-          <EmptyCart />
+          <EmptyCart navigation={navigation} />
         ) : (
           cart.map(item => (
             <View key={item.id} style={styles.productContainer}>
