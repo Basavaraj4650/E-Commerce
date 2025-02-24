@@ -92,7 +92,6 @@ export const style = (
 
     productList: {
       flexGrow: 1,
-      justifyContent: 'center',
     },
     productItem: {
       backgroundColor: '#fff',
@@ -146,6 +145,61 @@ export const style = (
       fontSize: 14,
       color: 'white',
       fontWeight: 'bold',
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    buttonStyle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#6200ee',
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderRadius: 25,
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 5,
+      marginLeft: 10,
+    },
+    buttonText: {
+      color: '#FFF',
+      fontSize: 14,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+      paddingHorizontal: 10,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 20,
+      backgroundColor: '#fff',
+    },
+    searchIcon: {
+      marginLeft: 10,
+    },
+    searchInput: {
+      flex: 1,
+      height: 40,
+      paddingHorizontal: 10,
+      fontSize: 16,
+      color: '#000',
+    },
+    noProductsContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    noProductsText: {
+      fontSize: 18,
+      color: '#888',
     },
   });
 };

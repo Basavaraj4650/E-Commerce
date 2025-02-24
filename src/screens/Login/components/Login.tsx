@@ -25,6 +25,7 @@ import {AlertType} from '../../../constants/config';
 import CustomAlert from '../../../components/CustomAlert';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserLoginData} from '../service/login.interface';
+import {setToLocalStorage} from '../../../shared/localStore';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -74,7 +75,6 @@ const Login = ({navigation}: Props) => {
   };
 
   const handleLogin = async () => {
-    navigation.navigate('Dashboard');
     let updatedErrorMessages = {...errorMessages};
 
     const userData: UserLoginData = {
@@ -106,6 +106,7 @@ const Login = ({navigation}: Props) => {
         setIsLoading(true);
         const res = await LoginUser(userData);
         if (res?.token) {
+          setToLocalStorage('isLoggedIn', true);
           setIsLoading(false);
           ToastAndroid.show('Loged in Successfully', ToastAndroid.SHORT);
           navigation.navigate('Dashboard');

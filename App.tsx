@@ -6,17 +6,40 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 
 import {Cart} from './src/screens/Cart';
 import {Profile, ProfileDetails} from './src/screens/Profile';
-import {Home} from './src/screens/Home';
-import {ForgotPassword, Login, Signup} from './src/screens/Login';
-import ChangePassword from './src/screens/Login/components/ChangePassword';
+import {CategoryProducts, Home} from './src/screens/Home';
+import {
+  ChangePassword,
+  ForgotPassword,
+  Login,
+  Signup,
+} from './src/screens/Login';
 import DynamicIcon from './src/components/DynamicIcon';
-import {ProductDetails} from './src/screens/Product';
-import Product from './src/screens/Product/components/Product';
+import {Product, ProductDetails} from './src/screens/Product';
+import {useEffect, useState} from 'react';
+import {getFromLocalStorage} from './src/shared/localStore';
+import {Favorites} from './src/screens/Favorites';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const queryClient = new QueryClient();
+  const [initialRoute, setInitialRoute] = useState('');
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await getFromLocalStorage('isLoggedIn');
+      if (isLoggedIn) {
+        setInitialRoute('Dashboard');
+      } else {
+        setInitialRoute('Login');
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  if (!initialRoute) {
+    return null;
+  }
 
   const HomeTabs = () => {
     return (
@@ -49,6 +72,20 @@ const App = () => {
               <DynamicIcon
                 library="FontAwesome"
                 name="shopping-bag"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Favorites"
+          component={Favorites}
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <DynamicIcon
+                library="AntDesign"
+                name="heart"
                 color={color}
                 size={size}
               />
@@ -90,7 +127,9 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Navigator
+          screenOptions={{headerShown: false}}
+          initialRouteName={initialRoute}>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
@@ -101,6 +140,8 @@ const App = () => {
           <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
           <Stack.Screen name="Product" component={Product} />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
+          <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
+          <Stack.Screen name="Favorites" component={Favorites} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>
       </NavigationContainer>

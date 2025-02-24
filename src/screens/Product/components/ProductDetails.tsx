@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   ScrollView,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import {
   isLandscape,
@@ -20,7 +21,11 @@ import {getProductDetails} from '../service/product.services';
 import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
-import {Products} from '../service/product.interface';
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from '../../../shared/localStore';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ProductDetails = (props: any) => {
   const productId = props?.route?.params?.productId;
@@ -36,6 +41,8 @@ const ProductDetails = (props: any) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
+  const [isInCart, setIsInCart] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -43,8 +50,8 @@ const ProductDetails = (props: any) => {
     return () => unsubscribe();
   }, []);
 
-  const {data: product} = useQuery<Products>(
-    ['product'],
+  const {data: product, refetch} = useQuery<any>(
+    ['product', productId],
     () => {
       setIsLoading(true);
       return getProductDetails(productId);
@@ -59,6 +66,64 @@ const ProductDetails = (props: any) => {
       },
     },
   );
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkIfProductInCartAndLiked = async () => {
+        const likedProducts =
+          (await getFromLocalStorage('likedProducts')) || {};
+        setIsLiked(likedProducts[productId] || false);
+
+        const existingCart = (await getFromLocalStorage('cart')) || [];
+        const productInCart = existingCart.find(
+          (item: {id: any}) => item.id === productId,
+        );
+        setIsInCart(!!productInCart);
+      };
+
+      checkIfProductInCartAndLiked();
+      refetch();
+    }, [productId, refetch]),
+  );
+
+  const toggleLike = async () => {
+    try {
+      const likedProducts = (await getFromLocalStorage('likedProducts')) || {};
+      likedProducts[productId] = !isLiked;
+
+      await setToLocalStorage('likedProducts', likedProducts);
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
+
+  const addToCart = async () => {
+    if (isInCart) {
+      props.navigation.navigate('Cart');
+    } else {
+      try {
+        const existingCart = (await getFromLocalStorage('cart')) || [];
+        const updatedCart = [...existingCart];
+
+        updatedCart.push({
+          ...product,
+          quantity: 1,
+          liked: false,
+        });
+
+        await setToLocalStorage('cart', updatedCart).then(() => {
+          ToastAndroid.show(
+            'Product added to cart Successfully',
+            ToastAndroid.SHORT,
+          );
+          setIsInCart(true);
+        });
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,12 +142,12 @@ const ProductDetails = (props: any) => {
                   color="white"
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.backButton}>
+              <TouchableOpacity onPress={toggleLike} style={styles.backButton}>
                 <DynamicIcon
                   library="AntDesign"
-                  name="hearto"
+                  name={isLiked ? 'heart' : 'hearto'}
                   size={24}
-                  color="white"
+                  color={isLiked ? 'red' : 'white'}
                 />
               </TouchableOpacity>
             </View>
@@ -132,8 +197,8 @@ const ProductDetails = (props: any) => {
               </View>
             </View>
             <CustomButton
-              title="Add To Cart"
-              onPress={() => props.navigation.navigate('Cart')}
+              title={isInCart ? 'Go To Cart' : 'Add To Cart'}
+              onPress={addToCart}
             />
           </>
         )}
