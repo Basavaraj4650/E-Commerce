@@ -173,5 +173,25 @@ export const style = (
       fontWeight: '600',
       marginLeft: 8,
     },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+      paddingHorizontal: 10,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 20,
+      backgroundColor: '#fff',
+    },
+    searchIcon: {
+      marginLeft: 10,
+    },
+    searchInput: {
+      flex: 1,
+      height: 40,
+      paddingHorizontal: 10,
+      fontSize: 16,
+      color: '#000',
+    },
   });
 };

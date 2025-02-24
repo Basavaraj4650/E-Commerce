@@ -6,6 +6,7 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
@@ -45,12 +46,24 @@ const Product = ({navigation}: Props) => {
   const [sortedProductList, setSortedProductList] = useState<Products>([]);
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
     const unsubscribe = subscribeToOrientationChanges(handleOrientationChange);
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300); // 300ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const {data: productList} = useQuery<Products>(
     ['productList'],
@@ -94,13 +107,29 @@ const Product = ({navigation}: Props) => {
       sortOption && sortedProductList.length
         ? sortedProductList
         : safeProductList;
+
     if (selectedCategories.length > 0) {
       list = list.filter(product =>
         selectedCategories.includes(product.category),
       );
     }
+
+    if (debouncedSearchQuery) {
+      list = list.filter(product =>
+        product.title
+          .toLowerCase()
+          .includes(debouncedSearchQuery.toLowerCase()),
+      );
+    }
+
     return list;
-  }, [sortOption, sortedProductList, safeProductList, selectedCategories]);
+  }, [
+    sortOption,
+    sortedProductList,
+    safeProductList,
+    selectedCategories,
+    debouncedSearchQuery,
+  ]);
   const numColumns = isLandscapeMode ? 3 : 2;
   const cardWidth = (width - 40) / numColumns - 10;
 
@@ -168,6 +197,21 @@ const Product = ({navigation}: Props) => {
   return (
     <SafeAreaView style={[styles.container, {padding: 10}]}>
       {isLoading && <Loader />}
+      <View style={styles.searchContainer}>
+        <DynamicIcon
+          library="MaterialIcons"
+          name="search"
+          size={24}
+          color="black"
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search products..."
+          placeholderTextColor="#999"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonStyle} onPress={toggleSortModal}>
           <DynamicIcon
