@@ -66,7 +66,7 @@ const Product = ({navigation}: Props) => {
     };
   }, [searchQuery]);
 
-  const {data: productList} = useQuery<Products>(
+  const {data: productList, isLoading: productListLoading} = useQuery<Products>(
     ['productList'],
     async (): Promise<Products> => {
       setIsLoading(true);
@@ -204,7 +204,7 @@ const Product = ({navigation}: Props) => {
 
   return (
     <SafeAreaView style={[styles.container, {padding: 10}]}>
-      {isLoading && <Loader />}
+      {(isLoading || productListLoading) && <Loader />}
       <View style={styles.searchContainer}>
         <DynamicIcon
           library="MaterialIcons"

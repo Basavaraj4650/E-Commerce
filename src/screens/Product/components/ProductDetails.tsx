@@ -42,6 +42,7 @@ const ProductDetails = (props: any) => {
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [isInCart, setIsInCart] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -68,18 +69,34 @@ const ProductDetails = (props: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      const checkIfProductInCart = async () => {
+      const checkIfProductInCartAndLiked = async () => {
+        const likedProducts =
+          (await getFromLocalStorage('likedProducts')) || {};
+        setIsLiked(likedProducts[productId] || false);
+
         const existingCart = (await getFromLocalStorage('cart')) || [];
-        const exists = existingCart.some(
+        const productInCart = existingCart.find(
           (item: {id: any}) => item.id === productId,
         );
-        setIsInCart(exists);
+        setIsInCart(!!productInCart);
       };
 
-      checkIfProductInCart();
+      checkIfProductInCartAndLiked();
       refetch();
     }, [productId, refetch]),
   );
+
+  const toggleLike = async () => {
+    try {
+      const likedProducts = (await getFromLocalStorage('likedProducts')) || {};
+      likedProducts[productId] = !isLiked;
+
+      await setToLocalStorage('likedProducts', likedProducts);
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
 
   const addToCart = async () => {
     if (isInCart) {
@@ -125,12 +142,12 @@ const ProductDetails = (props: any) => {
                   color="white"
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.backButton}>
+              <TouchableOpacity onPress={toggleLike} style={styles.backButton}>
                 <DynamicIcon
                   library="AntDesign"
-                  name="hearto"
+                  name={isLiked ? 'heart' : 'hearto'}
                   size={24}
-                  color="white"
+                  color={isLiked ? 'red' : 'white'}
                 />
               </TouchableOpacity>
             </View>

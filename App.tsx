@@ -17,6 +17,7 @@ import DynamicIcon from './src/components/DynamicIcon';
 import {Product, ProductDetails} from './src/screens/Product';
 import {useEffect, useState} from 'react';
 import {getFromLocalStorage} from './src/shared/localStore';
+import {Favorites} from './src/screens/Favorites';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -78,6 +79,20 @@ const App = () => {
           }}
         />
         <Tab.Screen
+          name="Favorites"
+          component={Favorites}
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <DynamicIcon
+                library="AntDesign"
+                name="heart"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
           name="Cart"
           component={Cart}
           options={{
@@ -126,6 +141,7 @@ const App = () => {
           <Stack.Screen name="Product" component={Product} />
           <Stack.Screen name="ProductDetails" component={ProductDetails} />
           <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
+          <Stack.Screen name="Favorites" component={Favorites} />
           <Stack.Screen name="Dashboard" component={HomeTabs} />
         </Stack.Navigator>
       </NavigationContainer>
