@@ -1,5 +1,13 @@
 import React from 'react';
-import {Modal, TouchableOpacity, Text, View, StyleSheet} from 'react-native';
+import {
+  Modal,
+  TouchableOpacity,
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import Slider from '@react-native-community/slider';
 
 const FilterModal = ({
   isVisible,
@@ -7,9 +15,12 @@ const FilterModal = ({
   onSelectCategories,
   selectedCategories,
   categories,
+  onSelectPriceRange,
 }: any) => {
   const [localSelectedCategories, setLocalSelectedCategories] =
     React.useState<string[]>(selectedCategories);
+  const [minPrice, setMinPrice] = React.useState(0);
+  const [maxPrice, setMaxPrice] = React.useState(1000); // Adjust max price as needed
 
   const handleCategoryToggle = (category: string) => {
     if (localSelectedCategories.includes(category)) {
@@ -23,6 +34,7 @@ const FilterModal = ({
 
   const handleApply = () => {
     onSelectCategories(localSelectedCategories);
+    onSelectPriceRange({minPrice, maxPrice});
     onClose();
   };
 
@@ -33,22 +45,54 @@ const FilterModal = ({
       animationType="slide"
       onRequestClose={onClose}>
       <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          {categories.map((category: string) => (
-            <TouchableOpacity
-              key={category}
-              style={styles.filterOption}
-              onPress={() => handleCategoryToggle(category)}>
-              <Text style={styles.filterOptionText}>{category}</Text>
-              {localSelectedCategories.includes(category) && (
-                <View style={styles.checkmark} />
-              )}
+        <ScrollView
+          contentContainerStyle={{flexGrow: 1, justifyContent: 'flex-end'}}
+          keyboardShouldPersistTaps="handled">
+          <View style={styles.modalContent}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+            {categories.map((category: string) => (
+              <TouchableOpacity
+                key={category}
+                style={styles.filterOption}
+                onPress={() => handleCategoryToggle(category)}>
+                <Text style={styles.filterOptionText}>
+                  {category.toUpperCase()}
+                </Text>
+                {localSelectedCategories.includes(category) && (
+                  <View style={styles.checkmark} />
+                )}
+              </TouchableOpacity>
+            ))}
+            <Text style={styles.sectionTitle}>Price Range</Text>
+            <View style={styles.sliderContainer}>
+              <Text style={{color: 'black'}}>Min: ${minPrice}</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={1000}
+                step={10}
+                value={minPrice}
+                onValueChange={setMinPrice}
+                minimumTrackTintColor="#000"
+                maximumTrackTintColor="#ccc"
+              />
+              <Text style={{color: 'black'}}>Max: ${maxPrice}</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={1000}
+                step={10}
+                value={maxPrice}
+                onValueChange={setMaxPrice}
+                minimumTrackTintColor="#000"
+                maximumTrackTintColor="#ccc"
+              />
+            </View>
+            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+              <Text style={styles.applyButtonText}>Apply</Text>
             </TouchableOpacity>
-          ))}
-          <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-            <Text style={styles.applyButtonText}>Apply</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -95,5 +139,19 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 10,
+    color: 'black',
+  },
+  sliderContainer: {
+    marginVertical: 10,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
 });

@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Modal, TouchableOpacity, Text, View, StyleSheet} from 'react-native';
+import {
+  Modal,
+  TouchableOpacity,
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 
 const SortModal = ({isVisible, onClose, onSelectOption}: any) => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -24,21 +31,25 @@ const SortModal = ({isVisible, onClose, onSelectOption}: any) => {
       animationType="slide"
       onRequestClose={onClose}>
       <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          {sortOptions.map(option => (
-            <TouchableOpacity
-              key={option.value}
-              style={styles.sortOption}
-              onPress={() => handleSelectOption(option.value)}>
-              <Text style={styles.sortOptionText}>{option.label}</Text>
-              {selectedOption === option.value && (
-                <View style={styles.radioButton}>
-                  <View style={styles.radioButtonSelected} />
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
+        <ScrollView
+          contentContainerStyle={{flexGrow: 1, justifyContent: 'flex-end'}}
+          keyboardShouldPersistTaps="handled">
+          <View style={styles.modalContent}>
+            {sortOptions.map(option => (
+              <TouchableOpacity
+                key={option.value}
+                style={styles.sortOption}
+                onPress={() => handleSelectOption(option.value)}>
+                <Text style={styles.sortOptionText}>{option.label}</Text>
+                {selectedOption === option.value && (
+                  <View style={styles.radioButton}>
+                    <View style={styles.radioButtonSelected} />
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
       </View>
     </Modal>
   );

@@ -48,6 +48,7 @@ const Product = ({navigation}: Props) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [priceRange, setPriceRange] = useState({minPrice: 0, maxPrice: 1000});
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -122,6 +123,12 @@ const Product = ({navigation}: Props) => {
       );
     }
 
+    list = list.filter(
+      product =>
+        product.price >= priceRange.minPrice &&
+        product.price <= priceRange.maxPrice,
+    );
+
     return list;
   }, [
     sortOption,
@@ -129,6 +136,7 @@ const Product = ({navigation}: Props) => {
     safeProductList,
     selectedCategories,
     debouncedSearchQuery,
+    priceRange,
   ]);
   const numColumns = isLandscapeMode ? 3 : 2;
   const cardWidth = (width - 40) / numColumns - 10;
@@ -246,15 +254,22 @@ const Product = ({navigation}: Props) => {
         onSelectCategories={setSelectedCategories}
         selectedCategories={selectedCategories}
         categories={catagaryList?.map((item: any) => item.category) || []}
+        onSelectPriceRange={setPriceRange}
       />
-      <FlatList
-        key={numColumns}
-        data={displayedProductList}
-        renderItem={renderProductItem}
-        keyExtractor={item => item.id.toString()}
-        numColumns={numColumns}
-        contentContainerStyle={styles.productList}
-      />
+      {displayedProductList.length === 0 ? (
+        <View style={styles.noProductsContainer}>
+          <Text style={styles.noProductsText}>No products found.</Text>
+        </View>
+      ) : (
+        <FlatList
+          key={numColumns}
+          data={displayedProductList}
+          renderItem={renderProductItem}
+          keyExtractor={item => item.id.toString()}
+          numColumns={numColumns}
+          contentContainerStyle={styles.productList}
+        />
+      )}
       <CustomAlert
         ref={alertRef}
         type={alertType}

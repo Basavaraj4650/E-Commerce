@@ -92,7 +92,6 @@ export const style = (
 
     productList: {
       flexGrow: 1,
-      justifyContent: 'center',
     },
     productItem: {
       backgroundColor: '#fff',
@@ -192,6 +191,15 @@ export const style = (
       paddingHorizontal: 10,
       fontSize: 16,
       color: '#000',
+    },
+    noProductsContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    noProductsText: {
+      fontSize: 18,
+      color: '#888',
     },
   });
 };
