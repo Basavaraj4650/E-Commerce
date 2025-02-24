@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import {UserSignupData} from '../../Login/service/login.interface';
 import {getUserData, upadteProfile} from '../service/profile.services';
 import DynamicIcon from '../../../components/DynamicIcon';
 import {COLORS} from '../../../constants/theme';
+import {NetworkContext} from '../../../components/NetworkContext';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -39,6 +40,7 @@ type ErrorMessagesType = {
 };
 
 const ProfileDetails = ({navigation}: Props) => {
+  const {isConnected} = useContext(NetworkContext);
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
   const styles = useMemo(
@@ -117,7 +119,7 @@ const ProfileDetails = ({navigation}: Props) => {
     }));
   };
 
-  const handleSignup = async () => {
+  const handleUpdateProfile = async () => {
     let updatedErrorMessages = {...errorMessages};
     const isValidPhone = /^\d{10}$/.test(formData.phone);
 
@@ -186,23 +188,29 @@ const ProfileDetails = ({navigation}: Props) => {
       phone: formData.phone.trim(),
     };
 
-    try {
-      setIsLoading(true);
-      const res = await upadteProfile(payload);
+    if (isConnected) {
+      try {
+        setIsLoading(true);
+        const res = await upadteProfile(payload);
 
-      if (res) {
+        if (res) {
+          setIsLoading(false);
+          ToastAndroid.show('Profile Updated Successfully', ToastAndroid.SHORT);
+          navigation.goBack();
+        } else {
+          setIsLoading(false);
+          setAlertMessage('Something Went Wrong');
+          setAlertType('error');
+          alertRef.current?.show();
+        }
+      } catch (error: any) {
         setIsLoading(false);
-        ToastAndroid.show('Profile Updated Successfully', ToastAndroid.SHORT);
-        navigation.goBack();
-      } else {
-        setIsLoading(false);
-        setAlertMessage('Something Went Wrong');
+        setAlertMessage(error?.response?.data || 'Something Went Wrong');
         setAlertType('error');
         alertRef.current?.show();
       }
-    } catch (error: any) {
-      setIsLoading(false);
-      setAlertMessage(error?.response?.data || 'Something Went Wrong');
+    } else {
+      setAlertMessage('Please connect to the Internet');
       setAlertType('error');
       alertRef.current?.show();
     }
@@ -300,7 +308,7 @@ const ProfileDetails = ({navigation}: Props) => {
           ) : null}
         </>
         <View style={{marginTop: 20}}>
-          <CustomButton title="Update Profile" onPress={handleSignup} />
+          <CustomButton title="Update Profile" onPress={handleUpdateProfile} />
         </View>
       </ScrollView>
       <CustomAlert

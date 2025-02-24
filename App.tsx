@@ -18,6 +18,7 @@ import {Product, ProductDetails} from './src/screens/Product';
 import {useEffect, useState} from 'react';
 import {getFromLocalStorage} from './src/shared/localStore';
 import {Favorites} from './src/screens/Favorites';
+import {NetworkProvider} from './src/components/NetworkContext';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -126,25 +127,30 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{headerShown: false}}
-          initialRouteName={initialRoute}>
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Signup" component={Signup} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-          <Stack.Screen name="ChangePassword" component={ChangePassword} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Cart" component={Cart} />
-          <Stack.Screen name="Profile" component={Profile} />
-          <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
-          <Stack.Screen name="Product" component={Product} />
-          <Stack.Screen name="ProductDetails" component={ProductDetails} />
-          <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
-          <Stack.Screen name="Favorites" component={Favorites} />
-          <Stack.Screen name="Dashboard" component={HomeTabs} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <NetworkProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{headerShown: false}}
+            initialRouteName={initialRoute}>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="ChangePassword" component={ChangePassword} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Cart" component={Cart} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
+            <Stack.Screen name="Product" component={Product} />
+            <Stack.Screen name="ProductDetails" component={ProductDetails} />
+            <Stack.Screen
+              name="CategoryProducts"
+              component={CategoryProducts}
+            />
+            <Stack.Screen name="Favorites" component={Favorites} />
+            <Stack.Screen name="Dashboard" component={HomeTabs} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </NetworkProvider>
     </QueryClientProvider>
   );
 };

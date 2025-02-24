@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import CustomAlert from '../../../components/CustomAlert';
 import {Loader} from '../../../components/Loader';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserSignupData} from '../service/login.interface';
+import {NetworkContext} from '../../../components/NetworkContext';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -41,6 +42,7 @@ type ErrorMessagesType = {
 
 const Signup = ({navigation}: Props) => {
   const {width, height} = useWindowDimensions();
+  const {isConnected} = useContext(NetworkContext);
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
   const styles = useMemo(
     () => style(width, height, isLandscapeMode),
@@ -167,22 +169,28 @@ const Signup = ({navigation}: Props) => {
       phone: formData.phone.trim(),
     };
 
-    try {
-      setIsLoading(true);
-      const res = await signup(payload);
-      if (res) {
+    if (isConnected) {
+      try {
+        setIsLoading(true);
+        const res = await signup(payload);
+        if (res) {
+          setIsLoading(false);
+          ToastAndroid.show('User Created Successfully', ToastAndroid.SHORT);
+          navigation.navigate('Login');
+        } else {
+          setIsLoading(false);
+          setAlertMessage('Something Went Wrong');
+          setAlertType('error');
+          alertRef.current?.show();
+        }
+      } catch (error: any) {
         setIsLoading(false);
-        ToastAndroid.show('User Created Successfully', ToastAndroid.SHORT);
-        navigation.navigate('Login');
-      } else {
-        setIsLoading(false);
-        setAlertMessage('Something Went Wrong');
+        setAlertMessage(error?.response?.data || 'Something Went Wrong');
         setAlertType('error');
         alertRef.current?.show();
       }
-    } catch (error: any) {
-      setIsLoading(false);
-      setAlertMessage(error?.response?.data || 'Something Went Wrong');
+    } else {
+      setAlertMessage('Please connect to the Internet');
       setAlertType('error');
       alertRef.current?.show();
     }

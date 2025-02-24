@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -20,12 +20,14 @@ import {COLORS} from '../../../constants/theme';
 import DynamicIcon from '../../../components/DynamicIcon';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Loader} from '../../../components/Loader';
+import {NetworkContext} from '../../../components/NetworkContext';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
 };
 
 const ChangePassword = ({navigation}: Props) => {
+  const {isConnected} = useContext(NetworkContext);
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
   const styles = useMemo(
