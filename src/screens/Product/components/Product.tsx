@@ -17,11 +17,12 @@ import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Loader} from '../../../components/Loader';
 import CustomAlert from '../../../components/CustomAlert';
-import {getProductList} from '../service/product.services';
+import {getCatagaryList, getProductList} from '../service/product.services';
 import {style} from '../style';
 import SortModal from './SortModal';
 import DynamicIcon from '../../../components/DynamicIcon';
 import {Products} from '../service/product.interface';
+import FilterModal from './FilterModal';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -42,6 +43,8 @@ const Product = ({navigation}: Props) => {
   const [isSortModalVisible, setIsSortModalVisible] = useState(false);
   const [sortOption, setSortOption] = useState<string | null>(null);
   const [sortedProductList, setSortedProductList] = useState<Products>([]);
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -67,11 +70,37 @@ const Product = ({navigation}: Props) => {
     },
   );
 
+  const {data: catagaryList} = useQuery<any>(
+    ['catagaryList'],
+    async () => {
+      setIsLoading(true);
+      const data = await getCatagaryList();
+      setIsLoading(false);
+      return data;
+    },
+    {
+      onError: (error: any) => {
+        setAlertMessage(error?.response?.data || 'Something Went Wrong');
+        setAlertType('error');
+        alertRef.current?.show();
+        setIsLoading(false);
+      },
+    },
+  );
+
   const safeProductList = Array.isArray(productList) ? productList : [];
-  const displayedProductList =
-    sortOption && sortedProductList.length
-      ? sortedProductList
-      : safeProductList;
+  const displayedProductList = useMemo(() => {
+    let list =
+      sortOption && sortedProductList.length
+        ? sortedProductList
+        : safeProductList;
+    if (selectedCategories.length > 0) {
+      list = list.filter(product =>
+        selectedCategories.includes(product.category),
+      );
+    }
+    return list;
+  }, [sortOption, sortedProductList, safeProductList, selectedCategories]);
   const numColumns = isLandscapeMode ? 3 : 2;
   const cardWidth = (width - 40) / numColumns - 10;
 
@@ -149,7 +178,9 @@ const Product = ({navigation}: Props) => {
           />
           <Text style={styles.buttonText}>Sort</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonStyle} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.buttonStyle}
+          onPress={() => setIsFilterModalVisible(true)}>
           <DynamicIcon
             library="MaterialIcons"
             name="filter-list"
@@ -164,6 +195,13 @@ const Product = ({navigation}: Props) => {
         isVisible={isSortModalVisible}
         onClose={toggleSortModal}
         onSelectOption={handleSortOptionSelect}
+      />
+      <FilterModal
+        isVisible={isFilterModalVisible}
+        onClose={() => setIsFilterModalVisible(false)}
+        onSelectCategories={setSelectedCategories}
+        selectedCategories={selectedCategories}
+        categories={catagaryList?.map((item: any) => item.category) || []}
       />
       <FlatList
         key={numColumns}
