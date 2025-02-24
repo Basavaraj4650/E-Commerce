@@ -7,16 +7,38 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import {Cart} from './src/screens/Cart';
 import {Profile, ProfileDetails} from './src/screens/Profile';
 import {CategoryProducts, Home} from './src/screens/Home';
-import {ForgotPassword, Login, Signup} from './src/screens/Login';
-import ChangePassword from './src/screens/Login/components/ChangePassword';
+import {
+  ChangePassword,
+  ForgotPassword,
+  Login,
+  Signup,
+} from './src/screens/Login';
 import DynamicIcon from './src/components/DynamicIcon';
-import {ProductDetails} from './src/screens/Product';
-import Product from './src/screens/Product/components/Product';
+import {Product, ProductDetails} from './src/screens/Product';
+import {useEffect, useState} from 'react';
+import {getFromLocalStorage} from './src/shared/localStore';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const queryClient = new QueryClient();
+  const [initialRoute, setInitialRoute] = useState('');
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await getFromLocalStorage('isLoggedIn');
+      if (isLoggedIn) {
+        setInitialRoute('Dashboard');
+      } else {
+        setInitialRoute('Login');
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  if (!initialRoute) {
+    return null;
+  }
 
   const HomeTabs = () => {
     return (
@@ -90,7 +112,9 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Navigator
+          screenOptions={{headerShown: false}}
+          initialRouteName={initialRoute}>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
