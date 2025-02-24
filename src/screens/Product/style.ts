@@ -147,5 +147,31 @@ export const style = (
       color: 'white',
       fontWeight: 'bold',
     },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    buttonStyle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#6200ee',
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderRadius: 25,
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 5,
+      marginLeft: 10,
+    },
+    buttonText: {
+      color: '#FFF',
+      fontSize: 14,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
   });
 };

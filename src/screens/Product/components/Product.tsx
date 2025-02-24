@@ -19,6 +19,8 @@ import {Loader} from '../../../components/Loader';
 import CustomAlert from '../../../components/CustomAlert';
 import {getProductList} from '../service/product.services';
 import {style} from '../style';
+import SortModal from './SortModal';
+import DynamicIcon from '../../../components/DynamicIcon';
 import {Products} from '../service/product.interface';
 
 type Props = {
@@ -37,6 +39,9 @@ const Product = ({navigation}: Props) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
+  const [isSortModalVisible, setIsSortModalVisible] = useState(false);
+  const [sortOption, setSortOption] = useState<string | null>(null);
+  const [sortedProductList, setSortedProductList] = useState<Products>([]);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -46,11 +51,11 @@ const Product = ({navigation}: Props) => {
 
   const {data: productList} = useQuery<Products>(
     ['productList'],
-    async () => {
+    async (): Promise<Products> => {
       setIsLoading(true);
       const data = await getProductList();
       setIsLoading(false);
-      return data;
+      return data as unknown as Products;
     },
     {
       onError: (error: any) => {
@@ -63,6 +68,10 @@ const Product = ({navigation}: Props) => {
   );
 
   const safeProductList = Array.isArray(productList) ? productList : [];
+  const displayedProductList =
+    sortOption && sortedProductList.length
+      ? sortedProductList
+      : safeProductList;
   const numColumns = isLandscapeMode ? 3 : 2;
   const cardWidth = (width - 40) / numColumns - 10;
 
@@ -90,12 +99,75 @@ const Product = ({navigation}: Props) => {
     </TouchableOpacity>
   );
 
+  const toggleSortModal = () => {
+    setIsSortModalVisible(!isSortModalVisible);
+  };
+
+  const handleSortOptionSelect = (option: string) => {
+    if (option === 'none') {
+      setSortOption(null);
+      setSortedProductList([]);
+    } else {
+      setSortOption(option);
+      sortProductList(option);
+    }
+    toggleSortModal();
+  };
+
+  const sortProductList = (option: string) => {
+    let sortedList = [...safeProductList];
+
+    switch (option) {
+      case 'price_low_to_high':
+        sortedList.sort((a, b) => a.price - b.price);
+        break;
+      case 'price_high_to_low':
+        sortedList.sort((a, b) => b.price - a.price);
+        break;
+      case 'top_rated':
+        sortedList.sort((a, b) => b.rating.rate - a.rating.rate);
+        break;
+      case 'low_rated':
+        sortedList.sort((a, b) => a.rating.rate - b.rating.rate);
+        break;
+      default:
+        break;
+    }
+    setSortedProductList(sortedList);
+  };
+
   return (
     <SafeAreaView style={[styles.container, {padding: 10}]}>
       {isLoading && <Loader />}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonStyle} onPress={toggleSortModal}>
+          <DynamicIcon
+            library="MaterialIcons"
+            name="sort"
+            size={20}
+            color="#FFF"
+          />
+          <Text style={styles.buttonText}>Sort</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonStyle} onPress={() => {}}>
+          <DynamicIcon
+            library="MaterialIcons"
+            name="filter-list"
+            size={20}
+            color="#FFF"
+          />
+          <Text style={styles.buttonText}>Filter</Text>
+        </TouchableOpacity>
+      </View>
+
+      <SortModal
+        isVisible={isSortModalVisible}
+        onClose={toggleSortModal}
+        onSelectOption={handleSortOptionSelect}
+      />
       <FlatList
         key={numColumns}
-        data={safeProductList}
+        data={displayedProductList}
         renderItem={renderProductItem}
         keyExtractor={item => item.id.toString()}
         numColumns={numColumns}
