@@ -23,6 +23,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Loader} from '../../../components/Loader';
 import CustomAlert from '../../../components/CustomAlert';
 import {UserData} from '../service/profile.interface';
+import {setToLocalStorage} from '../../../shared/localStore';
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -67,7 +68,7 @@ const Profile = ({navigation}: Props) => {
   );
 
   const handleLogout = () => {
-    // LogOut API Call
+    setToLocalStorage('isLoggedIn', false);
     navigation.navigate('Login');
   };
 
