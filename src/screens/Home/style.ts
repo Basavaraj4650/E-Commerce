@@ -106,8 +106,7 @@ export const style = (
       backgroundColor: '#ffffff',
       borderRadius: 10,
       padding: 20,
-      marginVertical: 8,
-      marginHorizontal: 16,
+      margin: 8,
       shadowColor: '#000',
       shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.1,
@@ -135,6 +134,26 @@ export const style = (
     productDescription: {
       fontSize: 12,
       color: '#555',
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+      paddingHorizontal: 10,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 20,
+      backgroundColor: '#fff',
+    },
+    searchIcon: {
+      marginLeft: 10,
+    },
+    searchInput: {
+      flex: 1,
+      height: 40,
+      paddingHorizontal: 10,
+      fontSize: 16,
+      color: '#000',
     },
   });
 };

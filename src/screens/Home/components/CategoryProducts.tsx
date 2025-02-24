@@ -6,6 +6,7 @@ import {
   View,
   Image,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import {
   isLandscape,
@@ -19,6 +20,7 @@ import CustomAlert from '../../../components/CustomAlert';
 import {Products} from '../../Product/service/product.interface';
 import {getProductsByCategory} from '../../Product/service/product.services';
 import {style} from '../style';
+import DynamicIcon from '../../../components/DynamicIcon';
 
 const CategoryProducts = (props: any) => {
   const categoryName = props?.route?.params?.categoryName;
@@ -34,12 +36,24 @@ const CategoryProducts = (props: any) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<AlertType>('error');
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
     const unsubscribe = subscribeToOrientationChanges(handleOrientationChange);
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const {data: ProductsByCategoryList = [], refetch} = useQuery<Products>(
     ['product', categoryName],
@@ -61,6 +75,10 @@ const CategoryProducts = (props: any) => {
   const safeProductList = Array.isArray(ProductsByCategoryList)
     ? ProductsByCategoryList
     : [];
+
+  const filteredProducts = safeProductList.filter(product =>
+    product.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()),
+  );
 
   const handleProductPress = (id: number) => {
     props.navigation.navigate('ProductDetails', {productId: id});
@@ -88,10 +106,25 @@ const CategoryProducts = (props: any) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {padding: 10}]}>
       {isLoading && <Loader />}
+      <View style={styles.searchContainer}>
+        <DynamicIcon
+          library="MaterialIcons"
+          name="search"
+          size={24}
+          color="black"
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search products..."
+          placeholderTextColor="#999"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
       <FlatList
-        data={safeProductList}
+        data={filteredProducts}
         renderItem={renderProductCard}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{paddingVertical: 10}}
