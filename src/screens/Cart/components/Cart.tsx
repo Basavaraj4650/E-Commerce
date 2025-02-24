@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ToastAndroid,
+  BackHandler,
 } from 'react-native';
 import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -40,6 +41,7 @@ const Cart = ({navigation}: Props) => {
   const [cart, setCart] = useState<any[]>([]);
   const deleteAlertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [exitAttempted, setExitAttempted] = useState(false);
 
   const {width, height} = useWindowDimensions();
   const [isLandscapeMode, setIsLandscapeMode] = useState(isLandscape());
@@ -70,6 +72,29 @@ const Cart = ({navigation}: Props) => {
       calculateTotal();
       loadCart();
     }, []),
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (exitAttempted) {
+          BackHandler.exitApp(); // Close the app if back was pressed twice
+        } else {
+          ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+          setExitAttempted(true);
+          setTimeout(() => setExitAttempted(false), 2000);
+          return true;
+        }
+        return true;
+      };
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+      return () => {
+        backHandler.remove();
+      };
+    }, [exitAttempted]),
   );
 
   const handleQuantityChange = async (

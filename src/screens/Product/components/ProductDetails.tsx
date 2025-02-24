@@ -21,7 +21,6 @@ import {getProductDetails} from '../service/product.services';
 import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
-import {Products} from '../service/product.interface';
 import {
   getFromLocalStorage,
   setToLocalStorage,
@@ -50,7 +49,7 @@ const ProductDetails = (props: any) => {
     return () => unsubscribe();
   }, []);
 
-  const {data: product, refetch} = useQuery<Products>(
+  const {data: product, refetch} = useQuery<any>(
     ['product', productId],
     () => {
       setIsLoading(true);
@@ -101,7 +100,7 @@ const ProductDetails = (props: any) => {
             'Product added to cart Successfully',
             ToastAndroid.SHORT,
           );
-          props.navigation.navigate('Cart');
+          setIsInCart(true);
         });
       } catch (error) {
         console.error('Error adding to cart:', error);
