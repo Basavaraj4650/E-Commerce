@@ -26,6 +26,7 @@ import {
   setToLocalStorage,
 } from '../../../shared/localStore';
 import {useFocusEffect} from '@react-navigation/native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 const ProductDetails = (props: any) => {
   const productId = props?.route?.params?.productId;
@@ -164,8 +165,14 @@ const ProductDetails = (props: any) => {
                   ),
                 )}
               </View>
-              <Image
-                source={{uri: product.image}}
+              <ImageViewer
+                imageUrls={[{url: product.image}]}
+                enableImageZoom={true}
+                enableSwipeDown={true}
+                onSwipeDown={() => {
+                  console.log('onSwipeDown');
+                }}
+                renderIndicator={() => <></>}
                 style={styles.productDetailImage}
               />
             </View>
