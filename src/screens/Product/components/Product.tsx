@@ -22,7 +22,7 @@ import {getCatagaryList, getProductList} from '../service/product.services';
 import {style} from '../style';
 import SortModal from './SortModal';
 import DynamicIcon from '../../../components/DynamicIcon';
-import {Products} from '../service/product.interface';
+import {Category, Products} from '../service/product.interface';
 import FilterModal from './FilterModal';
 
 type Props = {
@@ -84,7 +84,7 @@ const Product = ({navigation}: Props) => {
     },
   );
 
-  const {data: catagaryList} = useQuery<any>(
+  const {data: catagaryList} = useQuery<Category[]>(
     ['catagaryList'],
     async () => {
       setIsLoading(true);

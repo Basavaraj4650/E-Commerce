@@ -201,5 +201,37 @@ export const style = (
       fontSize: 18,
       color: '#888',
     },
+
+    similarProductsContainer: {
+      marginBottom: isLandscapeMode ? height * 0.04 : height * 0.02,
+    },
+    similarProductsTitle: {
+      color: '#18FFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    similarProductItem: {
+      width: isLandscapeMode ? width * 0.2 : width * 0.4,
+      marginHorizontal: isLandscapeMode ? width * 0.08 : width * 0.14,
+      alignItems: 'center',
+    },
+    similarProductImage: {
+      width: isLandscapeMode ? width * 0.3 : width * 0.6,
+      height: isLandscapeMode ? height * 0.4 : height * 0.2,
+      borderRadius: 10,
+    },
+    similarProductTitle: {
+      color: '#fff',
+      fontSize: 14,
+      marginTop: 5,
+      textAlign: 'center',
+    },
+    similarProductPrice: {
+      color: '#FFD700',
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginTop: 5,
+    },
   });
 };

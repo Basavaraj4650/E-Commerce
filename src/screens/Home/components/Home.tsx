@@ -19,7 +19,7 @@ import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Loader} from '../../../components/Loader';
 import CustomAlert from '../../../components/CustomAlert';
-import {Products} from '../../Product/service/product.interface';
+import {Category, Products} from '../../Product/service/product.interface';
 import {
   getCatagaryList,
   getProductList,
@@ -67,7 +67,7 @@ const Home = ({navigation}: Props) => {
     },
   );
 
-  const {data: catagaryList} = useQuery<any>(
+  const {data: catagaryList} = useQuery<Category[]>(
     ['catagaryList'],
     async () => {
       setIsLoading(true);
