@@ -78,8 +78,6 @@ const Login = ({navigation}: Props) => {
 
   const handleLogin = async () => {
     let updatedErrorMessages = {...errorMessages};
-    navigation.navigate('Dashboard');
-
 
     const userData: UserLoginData = {
       username: formData.username.trim(),

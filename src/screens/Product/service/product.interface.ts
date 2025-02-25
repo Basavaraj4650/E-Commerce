@@ -11,3 +11,8 @@ export type Products = {
   category: string;
   rating: Rating;
 }[];
+
+export interface Category {
+  category: string;
+  image: string;
+}

@@ -17,7 +17,10 @@ import {AlertType} from '../../../constants/config';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Loader} from '../../../components/Loader';
 import CustomAlert from '../../../components/CustomAlert';
-import {getProductDetails} from '../service/product.services';
+import {
+  getProductDetails,
+  getProductsByCategory,
+} from '../service/product.services';
 import {style} from '../style';
 import {CustomButton} from '../../../components/Button';
 import DynamicIcon from '../../../components/DynamicIcon';
@@ -44,6 +47,7 @@ const ProductDetails = (props: any) => {
   const alertRef = useRef<{show: () => void; hide: () => void}>(null);
   const [isInCart, setIsInCart] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState<any[]>([]);
 
   useEffect(() => {
     const handleOrientationChange = () => setIsLandscapeMode(isLandscape());
@@ -53,9 +57,18 @@ const ProductDetails = (props: any) => {
 
   const {data: product, refetch} = useQuery<any>(
     ['product', productId],
-    () => {
+    async () => {
       setIsLoading(true);
-      return getProductDetails(productId);
+      try {
+        const data = await getProductDetails(productId);
+        const res = await getProductsByCategory(data.category);
+        setSimilarProducts(res);
+        return data;
+      } catch (error) {
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
     },
     {
       onSuccess: () => setIsLoading(false),
@@ -202,6 +215,32 @@ const ProductDetails = (props: any) => {
                 <Text style={styles.descriptionLabel}>Description :</Text>
                 <Text style={styles.description}>{product.description}</Text>
               </View>
+            </View>
+            <View style={styles.similarProductsContainer}>
+              <Text style={styles.similarProductsTitle}>Similar Products</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {similarProducts.map(item => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.similarProductItem}
+                    onPress={() =>
+                      props.navigation.navigate('ProductDetails', {
+                        productId: item.id,
+                      })
+                    }>
+                    <Image
+                      source={{uri: item.image}}
+                      style={styles.similarProductImage}
+                    />
+                    <Text style={styles.similarProductTitle} numberOfLines={2}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.similarProductPrice}>
+                      ${item.price}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
             <CustomButton
               title={isInCart ? 'Go To Cart' : 'Add To Cart'}

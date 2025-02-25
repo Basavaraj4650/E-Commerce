@@ -1,7 +1,7 @@
 import {get} from '../../../services/axios.service';
-import {Products} from './product.interface';
+import {Category, Products} from './product.interface';
 
-export const getProductDetails = async (id: number): Promise<Products> => {
+export const getProductDetails = async (id: number): Promise<any> => {
   try {
     const response = await get<Products>(`/products/${id}`);
     return response;
@@ -30,11 +30,11 @@ export const getProductsByCategory = async (
   }
 };
 
-export const getCatagaryList = async (): Promise<any> => {
+export const getCatagaryList = async (): Promise<Category[]> => {
   try {
     // const response = await get<any>('/products/categories');
 
-    const response = [
+    const response: Category[] = [
       {
         category: 'electronics',
         image: 'https://fakestoreapi.com/img/81Zt42ioCgL._AC_SX679_.jpg',
